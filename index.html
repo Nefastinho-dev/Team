@@ -24,16 +24,226 @@
             background-color: var(--bg-dark);
             color: #fff;
             font-family: 'Rajdhani', sans-serif;
-            overflow-x: hidden; /* Prevent horizontal scroll */
-            overflow-y: auto; /* Enable vertical scroll */
+            overflow-x: hidden;
+            overflow-y: auto;
             display: flex;
             min-height: 100vh;
             background-image: 
                 linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
             background-size: 40px 40px;
-            background-position: center;
         }
+
+        /* Scrollbar stylisée */
+        body::-webkit-scrollbar { width: 8px; }
+        body::-webkit-scrollbar-track { background: #0d0f14; }
+        body::-webkit-scrollbar-thumb { background: #2a2d39; border-radius: 4px; }
+        body::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
+
+        #overlays {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .scanlines {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.1) 50%);
+            background-size: 100% 4px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            background-color: #0c0d12;
+            border-right: 2px solid #1c1f28;
+            padding: 40px 20px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sidebar-logo {
+            width: 100px;
+            margin-bottom: 50px;
+            filter: drop-shadow(0 0 10px var(--neon-cyan));
+        }
+
+        .menu-items { list-style: none; width: 100%; }
+        .menu-items li {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            color: #888;
+            cursor: pointer;
+            padding: 15px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .menu-items li:hover, .menu-items li.active {
+            color: #fff;
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.05), transparent);
+        }
+        .menu-items li.active { border-left-color: var(--neon-pink); color: #fff; }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 40px 60px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            transform: translateY(-30px);
+            transition: all 1s ease;
+        }
+
+        .team-logo-container { width: 150px; margin: 0 auto 20px; }
+        .main-logo { width: 100%; filter: drop-shadow(0 0 15px var(--neon-cyan)); }
+
+        .team-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-pink);
+            margin: 40px 0 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #0d0f14;
+            border: 1px solid #1c1f28;
+            border-left: 4px solid var(--neon-cyan);
+            padding: 20px;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.4s ease;
+        }
+        .card.founders { border-left-color: var(--neon-pink); }
+
+        .card-role { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: var(--neon-cyan); margin-bottom: 5px; }
+        .card-pseudo { font-size: 2.2rem; font-weight: 700; text-transform: uppercase; }
+
+        .show { opacity: 1 !important; transform: scale(1) !important; }
+        
+        .flash-effect { animation: flash 0.3s ease-out; }
+        @keyframes flash {
+            0% { background-color: var(--neon-cyan); }
+            100% { background-color: transparent; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="overlays"><div class="scanlines"></div></div>
+
+    <nav class="sidebar">
+        <img src="vixturn_logo.png" alt="VIXTURN" class="sidebar-logo">
+        <ul class="menu-items">
+            <li data-game="general" class="active">GENERAL</li>
+            <li data-game="valorant">VALORANT</li>
+            <li data-game="league_of_legends">LEAGUE OF LEGENDS</li>
+            <li data-game="rocket_league">ROCKET LEAGUE</li>
+            <li data-game="counter_strike">COUNTER STRIKE</li>
+            <li data-game="trackmania">TRACKMANIA</li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="header" id="header">
+            <div class="team-logo-container">
+                <img src="vixturn_logo.png" alt="Logo" class="main-logo">
+            </div>
+            <h1 class="team-name">VIXTURN GAMING</h1>
+        </header>
+
+        <h2 class="section-title">DIRECTION & STAFF</h2>
+        <div class="grid">
+            <div class="card founders" id="card-founders">
+                <div class="card-role">Fondateurs</div>
+                <div class="card-pseudo">NUMIO & XENOSTYLE</div>
+            </div>
+            <div class="card cm-streamer" id="card-nefaste">
+                <div class="card-role">CM & Streamer</div>
+                <div class="card-pseudo">NÉFASTE</div>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="players-title">ROSTER ACTIF</h2>
+        <div class="grid" id="players-grid"></div>
+    </main>
+
+    <script>
+        const gameData = {
+            general: { title: "ROSTER GENERAL", players: [{p:"N0V4", r:"Capitaine"}, {p:"GL1TCH", r:"Support"}, {p:"ZER0", r:"Analyste"}, {p:"PHANTOM", r:"Entry"}, {p:"RAZOR", r:"Lurk"}] },
+            valorant: { title: "ROSTER VALORANT", players: [{p:"N0V4", r:"Duelist"}, {p:"GL1TCH", r:"Initiator"}, {p:"ZER0", r:"Controller"}, {p:"PHANTOM", r:"Sentinel"}, {p:"SHADOW", r:"Flex"}] },
+            league_of_legends: { title: "ROSTER LoL", players: [{p:"N0V4", r:"Top"}, {p:"GL1TCH", r:"Jungle"}, {p:"ZER0", r:"Mid"}, {p:"PHANTOM", r:"ADC"}, {p:"SUPPORT", r:"Supp"}] },
+            rocket_league: { title: "ROSTER ROCKET LEAGUE", players: [{p:"N0V4", r:"Striker"}, {p:"GL1TCH", r:"Mid"}, {p:"ZER0", r:"Goalie"}] },
+            counter_strike: { title: "ROSTER CS", players: [{p:"N0V4", r:"AWP"}, {p:"GL1TCH", r:"Entry"}, {p:"ZER0", r:"IGL"}, {p:"PHANTOM", r:"Rifler"}, {p:"SHADOW", r:"Lurk"}] },
+            trackmania: { title: "ROSTER TRACKMANIA", players: [{p:"FAST_LIN3", r:"Pilote Solo"}] }
+        };
+
+        function renderPlayers(gameKey) {
+            const data = gameData[gameKey];
+            const grid = document.getElementById('players-grid');
+            document.getElementById('players-title').textContent = data.title;
+            grid.innerHTML = '';
+
+            data.players.forEach((player, index) => {
+                const card = document.createElement('div');
+                card.className = 'card player';
+                card.style.transitionDelay = (index * 0.1) + 's';
+                card.innerHTML = `<div class="card-role">${player.r}</div><div class="card-pseudo">${player.p}</div>`;
+                grid.appendChild(card);
+                
+                // Petit timeout pour déclencher l'animation CSS
+                setTimeout(() => card.classList.add('show'), 50);
+            });
+        }
+
+        // Gestion du menu
+        document.querySelector('.menu-items').addEventListener('click', (e) => {
+            if (e.target.tagName === 'LI') {
+                document.querySelectorAll('.menu-items li').forEach(li => li.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                document.body.classList.add('flash-effect');
+                setTimeout(() => document.body.classList.remove('flash-effect'), 300);
+                
+                renderPlayers(e.target.dataset.game);
+            }
+        });
+
+        // Lancement initial
+        window.onload = () => {
+            document.getElementById('header').classList.add('show');
+            document.getElementById('card-founders').classList.add('show');
+            document.getElementById('card-nefaste').classList.add('show');
+            renderPlayers('general');
+        };
+    </script>
+</body>
+</html>
 
         /* Stylized scrollbar */
         body::-webkit-scrollbar {
