@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roster Reveal - Cyberpunk E-Sport</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff00ea;
+            --bg-dark: #090a0f;
+            --tech-gray: #1a1c23;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* Scanline effect */
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.1);
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .container {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            z-index: 10;
+        }
+
+        /* Tech details in background */
+        .tech-detail {
+            position: absolute;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: var(--neon-cyan);
+            opacity: 0;
+            letter-spacing: 2px;
+        }
+        .tech-top-left { top: -40px; left: 0; }
+        .tech-bottom-right { bottom: -40px; right: 0; text-align: right;}
+
+        /* Header : Logo & Nom d'équipe */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(-50px);
+            transition: all 1s ease-out;
+        }
+
+        .logo-placeholder {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background: var(--tech-gray);
+            border: 2px solid var(--neon-cyan);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            color: var(--neon-cyan);
+        }
+
+        .team-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Roster Grid */
+        .roster {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .player-card {
+            background: linear-gradient(45deg, var(--tech-gray), #111);
+            border-left: 4px solid var(--neon-pink);
+            padding: 20px;
+            position: relative;
+            clip-path: polygon(0 0, 90% 0, 100% 20px, 100% 100%, 10% 100%, 0 calc(100% - 20px));
+            opacity: 0;
+            transform: translateX(-50px) skewX(-10deg);
+            transition: all 0.5s ease-out;
+        }
+
+        .player-card:hover {
+            transform: scale(1.05) skewX(0);
+            box-shadow: 0 0 15px var(--neon-pink);
+            border-left: 4px solid var(--neon-cyan);
+            z-index: 20;
+        }
+
+        .role {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            color: var(--neon-cyan);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .coach .role {
+            color: var(--neon-pink);
+        }
+        .coach {
+            border-left: 4px solid var(--neon-cyan);
+        }
+
+        .pseudo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        /* Glitch Animation for text */
+        .glitch {
+            position: relative;
+        }
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--neon-pink);
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--neon-cyan);
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 44px, 0); }
+            20% { clip: rect(80px, 9999px, 12px, 0); }
+            40% { clip: rect(30px, 9999px, 80px, 0); }
+            60% { clip: rect(90px, 9999px, 20px, 0); }
+            80% { clip: rect(20px, 9999px, 90px, 0); }
+            100% { clip: rect(60px, 9999px, 40px, 0); }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(20px, 9999px, 90px, 0); }
+            20% { clip: rect(60px, 9999px, 40px, 0); }
+            40% { clip: rect(10px, 9999px, 44px, 0); }
+            60% { clip: rect(80px, 9999px, 12px, 0); }
+            80% { clip: rect(30px, 9999px, 80px, 0); }
+            100% { clip: rect(90px, 9999px, 20px, 0); }
+        }
+
+        /* Classes ajoutées par JavaScript pour l'apparition */
+        .show {
+            opacity: 1 !important;
+            transform: translate(0) skewX(0) !important;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="tech-detail tech-top-left" id="tech1">SYS.BOOT // SEQUENCE INITIALIZED // V.8.0.4</div>
+        <div class="tech-detail tech-bottom-right" id="tech2">ROSTER.DATA // ENCRYPTED // OVERRIDE ACCEPTED</div>
+
+        <header class="header" id="header">
+            <div class="logo-placeholder">LOGO ICI</div>
+            <h1 class="team-name glitch" data-text="VIXTURN GAMING">VIXTURN GAMING</h1>
+        </header>
+
+        <div class="roster" id="roster">
+            <div class="player-card coach">
+                <div class="role">Head Coach</div>
+                <div class="pseudo">STRAT0S</div>
+            </div>
+            
+            <div class="player-card">
+                <div class="role">Entry Fragger</div>
+                <div class="pseudo">N0V4</div>
+            </div>
+            <div class="player-card">
+                <div class="role">Support</div>
+                <div class="pseudo">GL1TCH</div>
+            </div>
+            <div class="player-card">
+                <div class="role">In-Game Leader</div>
+                <div class="pseudo">ZER0</div>
+            </div>
+            <div class="player-card">
+                <div class="role">Sniper</div>
+                <div class="pseudo">PHANTOM</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Séquence d'animation au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Affichage des détails techniques en fond
+            setTimeout(() => {
+                document.getElementById('tech1').style.transition = "opacity 0.5s";
+                document.getElementById('tech1').style.opacity = "1";
+                document.getElementById('tech2').style.transition = "opacity 0.5s";
+                document.getElementById('tech2').style.opacity = "1";
+            }, 300);
+
+            // 2. Apparition du Header (Logo + Nom)
+            setTimeout(() => {
+                document.getElementById('header').classList.add('show');
+            }, 800);
+
+            // 3. Apparition en cascade (stagger) des joueurs et du coach
+            const cards = document.querySelectorAll('.player-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('show');
+                }, 1500 + (index * 300)); // Décalage de 300ms entre chaque carte
+            });
+        });
+    </script>
+</body>
+</html>
