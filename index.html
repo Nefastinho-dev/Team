@@ -2,38 +2,255 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roster Reveal - VIXTURN ESPORT</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --neon-cyan: #00f3ff;
-            --neon-pink: #ff00ea;
-            --bg-dark: #090a0f;
-            --tech-gray: #1a1c23;
-            --sidebar-width: 250px;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        :root {
+            --neon-blue: #02f7ff;
+            --violet-team: #6600cc; /* Violet profond pour faire ressortir le texte */
+            --bg-dark: rgba(20, 20, 20, 0.85);
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: #fff;
-            font-family: 'Rajdhani', sans-serif;
-            overflow-x: hidden;
-            overflow-y: auto;
-            display: flex;
-            min-height: 100vh;
-            background-image: 
-                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            background-color: transparent;
         }
 
+        /* --- CONTENEUR PRINCIPAL --- */
+        #top-bar {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100vw;
+            margin-top: 10px; /* Ajuste selon la hauteur du score Rocket League */
+            position: relative;
+        }
+
+        /* Espace vide central pour laisser le score du jeu visible */
+        .center-gap {
+            width: 380px; /* À ajuster si le score du jeu est plus grand/petit */
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 20;
+        }
+
+        /* Titre sous le tableau de score */
+        .bottom-title {
+            position: absolute;
+            top: 70px; /* Aligné juste en dessous du score central */
+            background: var(--bg-dark);
+            color: var(--neon-blue);
+            padding: 5px 20px;
+            font-size: 16px;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-bottom: 3px solid var(--neon-blue);
+            box-shadow: 0 5px 15px rgba(2, 247, 255, 0.3);
+            clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%);
+            /* Animation d'entrée */
+            transform: translateY(-150px);
+            opacity: 0;
+            animation: dropDown 0.8s cubic-bezier(0.2, 1, 0.3, 1) 0.2s forwards;
+            white-space: nowrap;
+        }
+
+        /* --- SECTIONS LATÉRALES --- */
+        .side {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Les blocs pour les points de BO (Au premier plan) */
+        .bo-wrapper {
+            background: var(--bg-dark);
+            height: 45px;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            z-index: 10; /* Devant les noms d'équipes */
+            border-bottom: 3px solid var(--neon-blue);
+            
+            /* Animation d'entrée */
+            transform: translateY(-150px);
+            opacity: 0;
+            animation: dropDown 0.8s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+        }
+
+        #bo-left-wrapper { clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%); margin-right: -15px; padding-right: 30px;}
+        #bo-right-wrapper { clip-path: polygon(0 0, 100% 0, 100% 100%, 15% 100%); margin-left: -15px; padding-left: 30px;}
+
+        /* Les points de BO individuels */
+        .dot {
+            width: 20px;
+            height: 12px;
+            background: rgba(2, 247, 255, 0.1);
+            border: 1px solid rgba(2, 247, 255, 0.4);
+            transform: skewX(-20deg);
+            transition: all 0.2s;
+        }
+
+        /* Animation quand un point est marqué */
+        .dot.active {
+            background: var(--neon-blue);
+            box-shadow: 0 0 12px var(--neon-blue);
+            border-color: white;
+            animation: popNeon 0.5s ease-out forwards;
+        }
+
+        /* Les Bannières de Noms d'équipes (En arrière plan pour glisser de derrière) */
+        .name-wrapper {
+            background: var(--violet-team);
+            height: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            font-size: 20px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 5; /* Derrière les blocs BO */
+            border-bottom: 2px solid white;
+        }
+
+        /* Conteneurs pour masquer le texte avant l'animation */
+        .name-mask-left { overflow: hidden; position: relative; }
+        .name-mask-right { overflow: hidden; position: relative; }
+
+        /* Slide Gauche (sort de derrière le BO gauche) */
+        .name-mask-left .name-wrapper {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 10% 100%);
+            transform: translateX(100%);
+            animation: slideOutLeft 0.8s cubic-bezier(0.2, 1, 0.3, 1) 0.6s forwards;
+            padding-right: 40px;
+        }
+
+        /* Slide Droit (sort de derrière le BO droit) */
+        .name-mask-right .name-wrapper {
+            clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
+            transform: translateX(-100%);
+            animation: slideOutRight 0.8s cubic-bezier(0.2, 1, 0.3, 1) 0.6s forwards;
+            padding-left: 40px;
+        }
+
+        /* --- ANIMATIONS CLÉS --- */
+        @keyframes dropDown {
+            from { transform: translateY(-150px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideOutLeft {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes popNeon {
+            0% { transform: skewX(-20deg) scale(1); filter: brightness(1); }
+            50% { transform: skewX(-20deg) scale(1.4); filter: brightness(2); }
+            100% { transform: skewX(-20deg) scale(1); filter: brightness(1); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="top-bar">
+        
+        <div class="side left">
+            <div class="name-mask-left">
+                <div class="name-wrapper" contenteditable="true">ÉQUIPE GAUCHE</div>
+            </div>
+            <div class="bo-wrapper" id="bo-left-wrapper">
+                <div id="dots-left" style="display: flex; gap: 8px;"></div>
+            </div>
+        </div>
+
+        <div class="center-gap">
+            <div class="bottom-title" contenteditable="true">RLCS 2026 - GRAND FINAL</div>
+        </div>
+
+        <div class="side right">
+            <div class="bo-wrapper" id="bo-right-wrapper">
+                <div id="dots-right" style="display: flex; gap: 8px;"></div>
+            </div>
+            <div class="name-mask-right">
+                <div class="name-wrapper" contenteditable="true">ÉQUIPE DROITE</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let maxRounds = 0;
+        let scoreLeft = 0;
+        let scoreRight = 0;
+
+        const dotsLeftCont = document.getElementById('dots-left');
+        const dotsRightCont = document.getElementById('dots-right');
+
+        // Fonction pour dessiner les rectangles de BO
+        function updateDisplay() {
+            dotsLeftCont.innerHTML = '';
+            dotsRightCont.innerHTML = '';
+
+            if (maxRounds === 0) return;
+
+            for (let i = 0; i < maxRounds; i++) {
+                // Création des points de l'équipe gauche
+                let dotL = document.createElement('div');
+                dotL.className = 'dot' + (i < scoreLeft ? ' active' : '');
+                dotsLeftCont.appendChild(dotL);
+
+                // Création des points de l'équipe droite
+                let dotR = document.createElement('div');
+                dotR.className = 'dot' + (i < scoreRight ? ' active' : '');
+                dotsRightCont.appendChild(dotR);
+            }
+        }
+
+        // Écouteur des touches clavier
+        window.addEventListener('keydown', (e) => {
+            // Touches du pavé numérique (Num2, Num3, Num4) pour définir la taille du BO
+            if (e.code === 'Numpad2') { maxRounds = 2; scoreLeft = 0; scoreRight = 0; }
+            if (e.code === 'Numpad3') { maxRounds = 3; scoreLeft = 0; scoreRight = 0; }
+            if (e.code === 'Numpad4') { maxRounds = 4; scoreLeft = 0; scoreRight = 0; }
+
+            // Touche R pour Reset complet du BO
+            if (e.key.toLowerCase() === 'r') {
+                maxRounds = 0;
+                scoreLeft = 0;
+                scoreRight = 0;
+            }
+
+            // Flèches directionnelles pour modifier les scores
+            if (maxRounds > 0) {
+                // Ajouter des points (Flèche Gauche pour équipe gauche, Droite pour droite)
+                if (e.key === 'ArrowLeft') { if (scoreLeft < maxRounds) scoreLeft++; }
+                if (e.key === 'ArrowRight') { if (scoreRight < maxRounds) scoreRight++; }
+                
+                // Enlever des points (Flèche Bas pour équipe gauche, Haut pour droite)
+                if (e.key === 'ArrowDown') { if (scoreLeft > 0) scoreLeft--; }
+                if (e.key === 'ArrowUp') { if (scoreRight > 0) scoreRight--; }
+            }
+
+            // Met à jour l'affichage après chaque appui
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>
         /* Scrollbar stylisée */
         body::-webkit-scrollbar { width: 8px; }
         body::-webkit-scrollbar-track { background: #0d0f14; }
